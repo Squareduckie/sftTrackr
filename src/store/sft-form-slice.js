@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = { isActivityStarted: false };
 const sftFormSlice = createSlice({
-  name: "passwordForm",
+  name: "sftForm",
   initialState,
   reducers: {
     startActivity(state) {

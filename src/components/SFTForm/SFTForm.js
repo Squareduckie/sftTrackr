@@ -1,87 +1,29 @@
 import { useRef, useState } from "react";
-import { useDispatch } from "react-redux";
-import {
-  Select,
-  Button,
-  Form,
-  Input,
-} from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import { Select, Button, Form, Input } from "antd";
 
-import { CONSTANTS } from "../../utils/constants";
 import { sftFormActions } from "../../store/sft-form-slice";
 import { generatePassword } from "../../utils/telegramSender";
 
 import "./SFTForm.css";
 
-const passwordFormatOptions = [
-  {
-    label: "Add Special Character",
-    value: CONSTANTS.PASSWORD_FORM.PASSWORD_FORMATS.ADD_SPECIAL_CHARACTER,
-  },
-  // {
-  //   label: "Add Numbers",
-  //   value: CONSTANTS.PASSWORD_FORM.PASSWORD_FORMATS.ADD_NUMBERS,
-  // },
-  {
-    label: "Only Letters",
-    value: CONSTANTS.PASSWORD_FORM.PASSWORD_FORMATS.ONLY_LETTERS,
-  },
-  {
-    label: "Captial Letters",
-    value: CONSTANTS.PASSWORD_FORM.PASSWORD_FORMATS.CAPTIAL_LETTERS,
-  },
-];
-
-/** Initial form values. */
-const initialPasswordFormatValues = [
-  CONSTANTS.PASSWORD_FORM.PASSWORD_FORMATS.ADD_SPECIAL_CHARACTER,
-  // CONSTANTS.PASSWORD_FORM.PASSWORD_FORMATS.ADD_NUMBERS,
-  CONSTANTS.PASSWORD_FORM.PASSWORD_FORMATS.ONLY_LETTERS,
-  CONSTANTS.PASSWORD_FORM.PASSWORD_FORMATS.CAPTIAL_LETTERS,
-];
-
-const initialIterationValue =
-  CONSTANTS.PASSWORD_FORM.INITIAL_VALUES.INITIAL_ITERATION_VALUE;
-
 let index = 5;
-const PasswordForm = () => {
+const SFTForm = () => {
+  const isActivityStarted = useSelector(
+    (state) => state.sftForm.isActivityStarted
+  );
+
   const dispatch = useDispatch();
   const { Option } = Select;
   const [items, setItems] = useState([]);
 
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
-  };
-
-  const [name, setName] = useState("");
   const inputRef = useRef(null);
-  const onNameChange = (event) => {
-    setName(event.target.value);
-  };
-
-  const deleteOption = (value) => {
-    setItems(
-      items.filter((item) => {
-        return item.value !== value;
-      })
-    );
-    console.log("deleted", value);
-  };
-
-  const addItem = (e) => {
-    e.preventDefault();
-    setItems([...items, { id: index++, value: name, label: name }]);
-    setName("");
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 0);
-  };
 
   /** Form handlers. */
   const onFinish = (values) => {
     // console.log("Success:", values);
-    generatePassword(values);
-    dispatch(sftFormActions.openOutputModal());
+    // generatePassword(values);
+    dispatch(sftFormActions.startActivity());
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -91,10 +33,6 @@ const PasswordForm = () => {
   return (
     <Form
       name="basic"
-      initialValues={{
-        passwordFormat: initialPasswordFormatValues,
-        iteration: initialIterationValue,
-      }}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
       autoComplete="off"
@@ -109,7 +47,7 @@ const PasswordForm = () => {
           },
         ]}
       >
-        <Input />
+        <Input disabled={isActivityStarted} />
       </Form.Item>
 
       <Form.Item
@@ -122,7 +60,7 @@ const PasswordForm = () => {
           },
         ]}
       >
-        <Input />
+        <Input disabled={isActivityStarted} />
       </Form.Item>
 
       <Form.Item
@@ -135,7 +73,7 @@ const PasswordForm = () => {
           },
         ]}
       >
-        <Input />
+        <Input disabled={isActivityStarted} />
       </Form.Item>
 
       <Form.Item
@@ -148,16 +86,25 @@ const PasswordForm = () => {
           },
         ]}
       >
-        <Input />
+        <Input disabled={isActivityStarted} />
       </Form.Item>
 
-      <Form.Item>
-        <Button type="primary" htmlType="submit">
-          Start Activity
-        </Button>
-      </Form.Item>
+      {!isActivityStarted && (
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Start Activity
+          </Button>
+        </Form.Item>
+      )}
+      {isActivityStarted && (
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Stop Activity
+          </Button>
+        </Form.Item>
+      )}
     </Form>
   );
 };
 
-export default PasswordForm;
+export default SFTForm;
