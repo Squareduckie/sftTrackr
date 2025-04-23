@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/sftTracker/static/css/main.700192a2.css",
+    "main.js": "/sftTracker/static/js/main.c422207e.js",
+    "static/js/453.80f8227a.chunk.js": "/sftTracker/static/js/453.80f8227a.chunk.js",
+    "index.html": "/sftTracker/index.html",
+    "main.700192a2.css.map": "/sftTracker/static/css/main.700192a2.css.map",
+    "main.c422207e.js.map": "/sftTracker/static/js/main.c422207e.js.map",
+    "453.80f8227a.chunk.js.map": "/sftTracker/static/js/453.80f8227a.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.700192a2.css",
+    "static/js/main.c422207e.js"
+  ]
+}
