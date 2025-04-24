@@ -37,4 +37,27 @@ export const checkIfActivityHasStarted = () => {
 
 export const removeFromLocal = (key) => {
   localStorage.removeItem(key);
-}
+};
+
+export const sendTelegramMessage = async () => {
+  const chatId = "-1002406518054";
+  const rankName = getFromLocal(CONSTANTS.FORM_ITEM_KEYS.RANK_NAME);
+  const platoonSection = getFromLocal(CONSTANTS.FORM_ITEM_KEYS.PLATOON_SECTION);
+  const location = getFromLocal(CONSTANTS.FORM_ITEM_KEYS.LOCATION);
+  const activity = getFromLocal(CONSTANTS.FORM_ITEM_KEYS.ACTIVITY);
+  const startTime = getFromLocal(CONSTANTS.FORM_ITEM_KEYS.START_TIME);
+  const message = `Rank/Name: ${rankName}\nPlt/Section: ${platoonSection}\nLocation: ${location}\nActivity: ${activity}\nStart: ${startTime}\nEnd:`;
+
+  const url = `https://hook.eu2.make.com/5wmtbd2mqzs8jlafrci42cmlflketyrz`;
+
+  await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: message,
+    }),
+  });
+};

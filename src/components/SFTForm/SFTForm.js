@@ -8,6 +8,7 @@ import {
   getFromLocal,
   removeFromLocal,
   saveToLocal,
+  sendTelegramMessage,
 } from "../../utils/telegramSender";
 
 import "./SFTForm.css";
@@ -32,6 +33,7 @@ const SFTForm = () => {
     saveToLocal(CONSTANTS.FORM_ITEM_KEYS.LOCATION, values.location);
     saveToLocal(CONSTANTS.FORM_ITEM_KEYS.ACTIVITY, values.activity);
     saveToLocal(CONSTANTS.FORM_ITEM_KEYS.START_TIME, formattedTime);
+    sendTelegramMessage();
     setIsActivityStarted(true);
   };
 
