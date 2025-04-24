@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Button, Form, Input } from "antd";
 
 import { CONSTANTS } from "../../utils/constants";
@@ -7,13 +6,15 @@ import { CONSTANTS } from "../../utils/constants";
 import {
   checkIfActivityHasStarted,
   getFromLocal,
+  removeFromLocal,
   saveToLocal,
 } from "../../utils/telegramSender";
 
 import "./SFTForm.css";
 
 const SFTForm = () => {
-  const dispatch = useDispatch();
+  const [form] = Form.useForm();
+
   const [isActivityStarted, setIsActivityStarted] = useState(
     checkIfActivityHasStarted()
   );
@@ -38,9 +39,21 @@ const SFTForm = () => {
     console.log("Failed:", errorInfo);
   };
 
+  const onFinishActivity = () => {
+    console.log("End activity");
+    removeFromLocal(CONSTANTS.FORM_ITEM_KEYS.RANK_NAME);
+    removeFromLocal(CONSTANTS.FORM_ITEM_KEYS.PLATOON_SECTION);
+    removeFromLocal(CONSTANTS.FORM_ITEM_KEYS.LOCATION);
+    removeFromLocal(CONSTANTS.FORM_ITEM_KEYS.ACTIVITY);
+    removeFromLocal(CONSTANTS.FORM_ITEM_KEYS.START_TIME);
+    form.resetFields();
+    setIsActivityStarted(false);
+  };
+
   return (
     <Form
       name="basic"
+      form={form}
       onFinish={onFinish}
       onFinishFailed={onFinishFailed}
       autoComplete="off"
@@ -127,14 +140,14 @@ const SFTForm = () => {
 
       {!isActivityStarted && (
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" color="green">
             Start Activity
           </Button>
         </Form.Item>
       )}
       {isActivityStarted && (
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" danger onClick={onFinishActivity}>
             Stop Activity
           </Button>
         </Form.Item>

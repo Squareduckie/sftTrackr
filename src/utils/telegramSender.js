@@ -34,3 +34,7 @@ export const checkIfActivityHasStarted = () => {
     isStartTimeExist;
   return isActivityStarted;
 };
+
+export const removeFromLocal = (key) => {
+  localStorage.removeItem(key);
+}
