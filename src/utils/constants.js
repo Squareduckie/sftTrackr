@@ -10,4 +10,6 @@ export const CONSTANTS = {
   CHANNELS: {
     CHARLIE: "-1002747777186",
   },
+  SHEETS:
+    "https://script.google.com/macros/s/AKfycbyzx_3WhHEZsyWPls8oYjRv-2WjiONQ5FRz6alAKD_f_XdAFmGGmYVSFqJOIf9tLE8/exec",
 };

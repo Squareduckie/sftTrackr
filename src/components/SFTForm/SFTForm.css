@@ -1,3 +1,7 @@
 .SFTForm {
   width: 90vw;
 }
+
+.checkbox-label {
+  white-space: pre-line;
+}
