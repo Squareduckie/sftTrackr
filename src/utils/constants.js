@@ -5,5 +5,9 @@ export const CONSTANTS = {
     LOCATION: "location",
     ACTIVITY: "activity",
     START_TIME: "startTime",
+    END_TIME: "endTime",
+  },
+  CHANNELS: {
+    CHARLIE: "-1002747777186",
   },
 };

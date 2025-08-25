@@ -4,5 +4,11 @@
 
 .App-FlexBoxStyle {
   width: 100vw;
-  height: 100vh;
+  height: 85vh;
+  overflow: scroll;
+}
+
+.App-titleStyle {
+  width: 100vw;
+  height: 10vh;
 }

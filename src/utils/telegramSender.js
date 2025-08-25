@@ -39,8 +39,7 @@ export const removeFromLocal = (key) => {
   localStorage.removeItem(key);
 };
 
-export const sendTelegramMessage = async () => {
-  const chatId = "-1002406518054";
+export const sendStartTelegramMessage = async () => {
   const rankName = getFromLocal(CONSTANTS.FORM_ITEM_KEYS.RANK_NAME);
   const platoonSection = getFromLocal(CONSTANTS.FORM_ITEM_KEYS.PLATOON_SECTION);
   const location = getFromLocal(CONSTANTS.FORM_ITEM_KEYS.LOCATION);
@@ -48,15 +47,38 @@ export const sendTelegramMessage = async () => {
   const startTime = getFromLocal(CONSTANTS.FORM_ITEM_KEYS.START_TIME);
   const message = `Rank/Name: ${rankName}\nPlt/Section: ${platoonSection}\nLocation: ${location}\nActivity: ${activity}\nStart: ${startTime}\nEnd:`;
 
-  const url = `https://hook.eu2.make.com/5wmtbd2mqzs8jlafrci42cmlflketyrz`;
+  const testUrl = `https://api.telegram.org/bot7677613806:AAHuIpblzFnJcUYKisgYITWskDj9jhtXPXI/sendMessage`;
 
-  await fetch(url, {
+  await fetch(testUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      chat_id: chatId,
+      chat_id: CONSTANTS.CHANNELS.CHARLIE,
+      text: message,
+    }),
+  });
+};
+
+export const sendEndTelegramMessage = async () => {
+  const rankName = getFromLocal(CONSTANTS.FORM_ITEM_KEYS.RANK_NAME);
+  const platoonSection = getFromLocal(CONSTANTS.FORM_ITEM_KEYS.PLATOON_SECTION);
+  const location = getFromLocal(CONSTANTS.FORM_ITEM_KEYS.LOCATION);
+  const activity = getFromLocal(CONSTANTS.FORM_ITEM_KEYS.ACTIVITY);
+  const startTime = getFromLocal(CONSTANTS.FORM_ITEM_KEYS.START_TIME);
+  const endTime = getFromLocal(CONSTANTS.FORM_ITEM_KEYS.END_TIME);
+  const message = `Rank/Name: ${rankName}\nPlt/Section: ${platoonSection}\nLocation: ${location}\nActivity: ${activity}\nStart: ${startTime}\nEnd: ${endTime}`;
+
+  const testUrl = `https://api.telegram.org/bot7677613806:AAHuIpblzFnJcUYKisgYITWskDj9jhtXPXI/sendMessage`;
+
+  await fetch(testUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      chat_id: CONSTANTS.CHANNELS.CHARLIE,
       text: message,
     }),
   });

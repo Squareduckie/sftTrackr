@@ -8,7 +8,8 @@ import {
   getFromLocal,
   removeFromLocal,
   saveToLocal,
-  sendTelegramMessage,
+  sendEndTelegramMessage,
+  sendStartTelegramMessage,
 } from "../../utils/telegramSender";
 
 import "./SFTForm.css";
@@ -21,7 +22,7 @@ const SFTForm = () => {
   );
 
   /** Form handlers. */
-  const onFinish = (values) => {
+  const onFinish = async (values) => {
     // console.log("Success:", values);
     const time = new Date();
     const formattedTime = time.toLocaleString();
@@ -33,7 +34,7 @@ const SFTForm = () => {
     saveToLocal(CONSTANTS.FORM_ITEM_KEYS.LOCATION, values.location);
     saveToLocal(CONSTANTS.FORM_ITEM_KEYS.ACTIVITY, values.activity);
     saveToLocal(CONSTANTS.FORM_ITEM_KEYS.START_TIME, formattedTime);
-    sendTelegramMessage();
+    await sendStartTelegramMessage();
     setIsActivityStarted(true);
   };
 
@@ -41,8 +42,12 @@ const SFTForm = () => {
     console.log("Failed:", errorInfo);
   };
 
-  const onFinishActivity = () => {
+  const onFinishActivity = async () => {
+    const time = new Date();
+    const formattedTime = time.toLocaleString();
     console.log("End activity");
+    saveToLocal(CONSTANTS.FORM_ITEM_KEYS.END_TIME, formattedTime);
+    await sendEndTelegramMessage();
     removeFromLocal(CONSTANTS.FORM_ITEM_KEYS.RANK_NAME);
     removeFromLocal(CONSTANTS.FORM_ITEM_KEYS.PLATOON_SECTION);
     removeFromLocal(CONSTANTS.FORM_ITEM_KEYS.LOCATION);
