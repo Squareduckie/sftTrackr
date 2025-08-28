@@ -1,3 +1,6 @@
+import { CONSTANTS } from "./constants";
+import { getFromLocal } from "./telegramSender";
+
 export const getSFTChecklist = async (url) => {
   url += `?action=GET_SFT_CHECKLIST`;
   try {
@@ -15,8 +18,9 @@ export const getSFTChecklist = async (url) => {
   }
 };
 
-export const getActivityList = async (url) => {
-  url += `?action=GET_SCHOOL_LIST`;
+export const getRowNumber = async () => {
+  const url = `${CONSTANTS.SHEETS}?action=GET_LAST_ROW&coy=${CONSTANTS.COYS.CHARLIE}`;
+
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -32,9 +36,20 @@ export const getActivityList = async (url) => {
   }
 };
 
-export const updateAttendance = async (url, data) => {
+export const updateSFT = async (row) => {
+  const data = {
+    rankName: getFromLocal(CONSTANTS.FORM_ITEM_KEYS.RANK_NAME),
+    startTime: getFromLocal(CONSTANTS.FORM_ITEM_KEYS.START_TIME),
+    endTime: getFromLocal(CONSTANTS.FORM_ITEM_KEYS.END_TIME),
+    platoonSection: getFromLocal(CONSTANTS.FORM_ITEM_KEYS.PLATOON_SECTION),
+    location: getFromLocal(CONSTANTS.FORM_ITEM_KEYS.LOCATION),
+    activity: getFromLocal(CONSTANTS.FORM_ITEM_KEYS.ACTIVITY),
+    rowNumber: row,
+    subUnit: getFromLocal(CONSTANTS.FORM_ITEM_KEYS.SUB_UNIT),
+  };
+
   try {
-    const response = await fetch(url, {
+    const response = await fetch(CONSTANTS.SHEETS, {
       method: "POST",
       redirect: "follow",
       headers: {
@@ -48,7 +63,7 @@ export const updateAttendance = async (url, data) => {
     }
     return true;
   } catch (e) {
-    console.error("Failed to update attendance:", e.message);
+    console.error("Failed to update SFT:", e.message);
     return false;
   }
 };

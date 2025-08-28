@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Form, Input, Modal, Checkbox, message } from "antd";
+import { Button, Form, Input, Modal, Checkbox, message, Select } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 
 import { CONSTANTS } from "../../utils/constants";
@@ -11,7 +11,11 @@ import {
   sendEndTelegramMessage,
   sendStartTelegramMessage,
 } from "../../utils/telegramSender";
-import { getSFTChecklist } from "../../utils/googleSheetAPI";
+import {
+  getRowNumber,
+  getSFTChecklist,
+  updateSFT,
+} from "../../utils/googleSheetAPI";
 
 import "./SFTForm.css";
 
@@ -42,8 +46,12 @@ const SFTForm = () => {
   const onFinish = async (values) => {
     console.log(values);
     const formattedTime = new Date().toLocaleString();
-    const rankNames = values.rankName.map((item) => item).filter(Boolean);
-    saveToLocal(CONSTANTS.FORM_ITEM_KEYS.RANK_NAME, rankNames.join(","));
+    const rankNames = values.rankName
+      .map((item) => item)
+      .filter(Boolean)
+      .trim()
+      .toUpperCase();
+    saveToLocal(CONSTANTS.FORM_ITEM_KEYS.RANK_NAME, rankNames.join(", "));
     // saveToLocal(CONSTANTS.FORM_ITEM_KEYS.RANK_NAME, values.rankName);
     saveToLocal(
       CONSTANTS.FORM_ITEM_KEYS.PLATOON_SECTION,
@@ -75,6 +83,9 @@ const SFTForm = () => {
     }
 
     setIsMessageSending(true);
+    const row = (await getRowNumber()) + 1;
+    saveToLocal(CONSTANTS.FORM_ITEM_KEYS.ROW, row);
+    await updateSFT(row);
     await sendStartTelegramMessage();
     setIsActivityStarted(true);
     setIsMessageSending(false);
@@ -89,7 +100,11 @@ const SFTForm = () => {
     const formattedTime = new Date().toLocaleString();
 
     saveToLocal(CONSTANTS.FORM_ITEM_KEYS.END_TIME, formattedTime);
+    setIsMessageSending(true);
+    const row = getFromLocal(CONSTANTS.FORM_ITEM_KEYS.ROW);
+    await updateSFT(row);
     await sendEndTelegramMessage();
+    setIsMessageSending(false);
 
     // Clear local storage
     [
@@ -99,13 +114,16 @@ const SFTForm = () => {
       CONSTANTS.FORM_ITEM_KEYS.ACTIVITY,
       CONSTANTS.FORM_ITEM_KEYS.START_TIME,
       CONSTANTS.FORM_ITEM_KEYS.END_TIME,
+      CONSTANTS.FORM_ITEM_KEYS.ROW,
+      CONSTANTS.FORM_ITEM_KEYS.SUB_UNIT,
     ].forEach(removeFromLocal);
 
     form.setFieldsValue({
-      rankName: "",
+      rankName: [""],
       platoonSection: "",
       location: "",
       activity: "",
+      subUnit: "",
     });
     setCheckedList([]);
     setIsActivityStarted(false);
@@ -113,6 +131,10 @@ const SFTForm = () => {
 
   const onChecklistChange = (list) => {
     setCheckedList(list);
+  };
+
+  const onSubUnitChange = (e) => {
+    saveToLocal(CONSTANTS.FORM_ITEM_KEYS.SUB_UNIT, e);
   };
 
   return (
@@ -199,13 +221,38 @@ const SFTForm = () => {
                   icon={<PlusOutlined />}
                   disabled={isActivityStarted}
                 >
-                  Add field
+                  Add Participant
                 </Button>
                 <Form.ErrorList errors={errors} />
               </Form.Item>
             </Form.Item>
           )}
         </Form.List>
+
+        <Form.Item
+          label="Sub-Unit"
+          name="subUnit"
+          rules={[
+            {
+              required: true,
+              message: "Please select the school you are asigned to.",
+            },
+          ]}
+        >
+          <Select
+            disabled={isActivityStarted}
+            onChange={onSubUnitChange}
+            placeholder="Select your sub-unit"
+            options={[
+              { value: CONSTANTS.COYS.HQ, label: CONSTANTS.COYS.HQ },
+              { value: CONSTANTS.COYS.ALPHA, label: CONSTANTS.COYS.ALPHA },
+              { value: CONSTANTS.COYS.BRAVO, label: CONSTANTS.COYS.BRAVO },
+              { value: CONSTANTS.COYS.CHARLIE, label: CONSTANTS.COYS.CHARLIE },
+              { value: CONSTANTS.COYS.ME, label: CONSTANTS.COYS.ME },
+            ]}
+          />
+        </Form.Item>
+
         <Form.Item
           label="Platoon/ Section"
           name="platoonSection"
@@ -237,7 +284,7 @@ const SFTForm = () => {
 
         {!isActivityStarted && (
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button block type="primary" htmlType="submit">
               Start Activity
             </Button>
           </Form.Item>
@@ -245,7 +292,13 @@ const SFTForm = () => {
 
         {isActivityStarted && (
           <Form.Item>
-            <Button type="primary" danger onClick={onFinishActivity}>
+            <Button
+              block
+              type="primary"
+              danger
+              onClick={onFinishActivity}
+              loading={isMessageSending}
+            >
               Stop Activity
             </Button>
           </Form.Item>
