@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/sftTracker/static/css/main.72da7351.css",
-    "main.js": "/sftTracker/static/js/main.d77c3a8b.js",
-    "static/js/453.80f8227a.chunk.js": "/sftTracker/static/js/453.80f8227a.chunk.js",
-    "index.html": "/sftTracker/index.html",
-    "main.72da7351.css.map": "/sftTracker/static/css/main.72da7351.css.map",
-    "main.d77c3a8b.js.map": "/sftTracker/static/js/main.d77c3a8b.js.map",
-    "453.80f8227a.chunk.js.map": "/sftTracker/static/js/453.80f8227a.chunk.js.map"
+    "main.css": "/sftTrackr/static/css/main.72da7351.css",
+    "main.js": "/sftTrackr/static/js/main.1979fc77.js",
+    "static/js/453.d583917c.chunk.js": "/sftTrackr/static/js/453.d583917c.chunk.js",
+    "index.html": "/sftTrackr/index.html",
+    "main.72da7351.css.map": "/sftTrackr/static/css/main.72da7351.css.map",
+    "main.1979fc77.js.map": "/sftTrackr/static/js/main.1979fc77.js.map",
+    "453.d583917c.chunk.js.map": "/sftTrackr/static/js/453.d583917c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.72da7351.css",
-    "static/js/main.d77c3a8b.js"
+    "static/js/main.1979fc77.js"
   ]
 }
