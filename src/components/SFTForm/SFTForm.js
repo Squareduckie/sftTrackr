@@ -41,7 +41,7 @@ const SFTForm = () => {
   const [SFTChecklist, setSFTChecklist] = useState([]);
   const [checkedList, setCheckedList] = useState([]);
   const [formValues, setFormValues] = useState({});
-  const [subUnitLabel, setSubUnitLabel] = useState("Platoon/ Section:");
+  const [subUnitLabel, setSubUnitLabel] = useState("Platoon/Section:");
 
   const initialValues = {
     rankName: getFromLocal(CONSTANTS.FORM_ITEM_KEYS.RANK_NAME)
@@ -160,12 +160,21 @@ const SFTForm = () => {
     setCheckedList(list);
   };
 
+    //Added function to handle "Select All" checkbox change
+  const onCheckAllChange = (e) => {
+    if (e.target.checked) {
+      setCheckedList(SFTChecklist);
+    } else {
+      setCheckedList([]);
+    }
+  };
+
   const onSubUnitChange = (e) => {
     saveToLocal(CONSTANTS.FORM_ITEM_KEYS.SUB_UNIT, e);
     if (e === CONSTANTS.COYS.HQ) {
-      setSubUnitLabel("Branch/ Department:");
+      setSubUnitLabel("Branch/Department:");
     } else {
-      setSubUnitLabel("Platoon/ Section:");
+      setSubUnitLabel("Platoon/Section:");
     }
   };
 
@@ -201,7 +210,8 @@ const SFTForm = () => {
           ]}
         >
           {(fields, { add, remove }, { errors }) => (
-            <Form.Item label="Rank/ Name">
+            //Made rank/name required
+             <Form.Item label="Rank/Name" required> 
               {fields.map((field) => {
                 const { key, ...fieldProps } = field; // extract key from spread
                 return (
@@ -213,17 +223,20 @@ const SFTForm = () => {
                       marginBottom: 8,
                     }}
                   >
-                    <Form.Item
-                      {...fieldProps} // spread without key
-                      rules={[
-                        { required: true, message: "Please input rank/name" },
-                      ]}
-                      noStyle
-                    >
+
+                     <Form.Item {...fieldProps} noStyle>
                       <Input
                         placeholder="Enter rank/name"
                         disabled={isActivityStarted}
-                        style={{ flex: 1 }}
+                        style={{ flex: 1, textTransform: "uppercase" }}
+                        onChange={(e) => {
+                          const val = e.target.value.toUpperCase();
+                          const current = form.getFieldValue("rankName") || [];
+                          const idx = field.name;
+                          const next = [...current];
+                          next[idx] = val;
+                          form.setFieldsValue({ rankName: next });
+                        }}
                       />
                     </Form.Item>
 
@@ -265,12 +278,13 @@ const SFTForm = () => {
           <Select
             disabled={isActivityStarted}
             onChange={onSubUnitChange}
-            placeholder="Select your sub-unit"
+            placeholder="SELECT SUB-UNIT"
             options={[
               { value: CONSTANTS.COYS.HQ, label: CONSTANTS.COYS.HQ },
               { value: CONSTANTS.COYS.ALPHA, label: CONSTANTS.COYS.ALPHA },
               { value: CONSTANTS.COYS.BRAVO, label: CONSTANTS.COYS.BRAVO },
               { value: CONSTANTS.COYS.CHARLIE, label: CONSTANTS.COYS.CHARLIE },
+              { value: CONSTANTS.COYS.DELTA, label: CONSTANTS.COYS.DELTA },
               { value: CONSTANTS.COYS.ME, label: CONSTANTS.COYS.ME },
             ]}
           />
@@ -286,8 +300,16 @@ const SFTForm = () => {
               message: "Please input your platoon and section!",
             },
           ]}
-        >
-          <Input disabled={isActivityStarted} />
+              >
+          <Input
+            disabled={isActivityStarted}
+            placeholder="e.g. P2S3, HQ"
+            style={{ flex: 1, textTransform: "uppercase" }}
+            onChange={(e) =>
+            form.setFieldsValue({ platoonSection: e.target.value.toUpperCase() })
+                // Force CAPS on all input boxes for consistency
+            }
+          />
         </Form.Item>
 
         <Form.Item
@@ -295,7 +317,12 @@ const SFTForm = () => {
           name="location"
           rules={[{ required: true, message: "Please input location!" }]}
         >
-          <Input disabled={isActivityStarted} />
+          <Input
+            disabled={isActivityStarted}
+            placeholder="e.g. MPH, GYM, 30SCE RUNNING ROUTE"
+            style={{ textTransform: "uppercase" }}
+            onChange={(e) => form.setFieldsValue({ location: e.target.value.toUpperCase() })}
+          />
         </Form.Item>
 
         <Form.Item
@@ -303,7 +330,12 @@ const SFTForm = () => {
           name="activity"
           rules={[{ required: true, message: "Please input activity!" }]}
         >
-          <Input disabled={isActivityStarted} />
+          <Input
+            disabled={isActivityStarted}
+            placeholder="e.g. BADMINTON, GYM, RUNNING"
+            style={{ textTransform: "uppercase" }}
+            onChange={(e) => form.setFieldsValue({ activity: e.target.value.toUpperCase() })}
+          />
         </Form.Item>
 
         {!isActivityStarted && (
@@ -352,6 +384,20 @@ const SFTForm = () => {
             </Checkbox>
           ))}
         </Checkbox.Group>
+
+        <div style={{ marginTop: 12, display: "flex", justifyContent: "flex-end" }}>
+          <Checkbox
+            indeterminate={
+              checkedList.length > 0 && checkedList.length < SFTChecklist.length
+            }
+            onChange={onCheckAllChange}
+            checked={
+              SFTChecklist.length > 0 && checkedList.length === SFTChecklist.length
+            }
+          >
+            Select All
+          </Checkbox>
+        </div>
       </Modal>
     </Spin>
   );

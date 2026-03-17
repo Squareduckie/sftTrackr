@@ -14,6 +14,8 @@ export const CONSTANTS = {
     ALPHA: "-1002945925585",
     BRAVO: "-1002943762170",
     CHARLIE: "-1002747777186",
+    DELTA: "-1003729784843", // 170326 Added @sft30scebot to new DELTA tele channel,
+    // used hard-coded bot token in telegramSender.js to send message and checked update for channel ID
     ME: "-1003061533781",
   },
   COYS: {
@@ -21,6 +23,7 @@ export const CONSTANTS = {
     ALPHA: "ALPHA",
     BRAVO: "BRAVO",
     CHARLIE: "CHARLIE",
+    DELTA: "DELTA", // Added DELTA const
     ME: "ME",
   },
   SHEETS:
