@@ -39,7 +39,9 @@ const SFTForm = () => {
   const [isModalShown, setIsModalShown] = useState(false);
   const [isLoadingChecklist, setIsLoadingChecklist] = useState(false);
   const [SFTChecklist, setSFTChecklist] = useState([]);
-  const [checkedList, setCheckedList] = useState([]);
+  const [checkedListPage1, setCheckedListPage1] = useState([]);
+  const [checkedListPage2, setCheckedListPage2] = useState([]);
+  const [modalPage, setModalPage] = useState(1);
   const [formValues, setFormValues] = useState({});
   const [subUnitLabel, setSubUnitLabel] = useState("Platoon/Section:");
 
@@ -73,6 +75,7 @@ const SFTForm = () => {
   const onFinish = async (values) => {
     console.log(values);
     setFormValues(values);
+    setModalPage(1);
     setIsModalShown(true);
     // setIsLoadingChecklist(true);
 
@@ -87,10 +90,12 @@ const SFTForm = () => {
   };
 
   const startActivity = async () => {
-    if (checkedList.length !== SFTChecklist.length) {
-      messageApi.error(
-        "Please complete the checklist before starting the activity."
-      );
+    // require every checklist item to be checked (by value), not just matching lengths
+    const allCheckedStart = SFTChecklist.length > 0 && SFTChecklist.every((item) =>
+      checkedListPage1.includes(item) || checkedListPage2.includes(item)
+    );
+    if (!allCheckedStart) {
+      messageApi.error("Please complete the checklist before starting the activity.");
       return;
     }
 
@@ -152,22 +157,17 @@ const SFTForm = () => {
       activity: "",
       subUnit: "",
     });
-    setCheckedList([]);
+    setCheckedListPage1([]);
+    setCheckedListPage2([]);
     setIsActivityStarted(false);
   };
 
-  const onChecklistChange = (list) => {
-    setCheckedList(list);
+  const onChecklistChange = (list, page = 1) => {
+    if (page === 1) setCheckedListPage1(list);
+    else setCheckedListPage2(list);
   };
 
-    //Added function to handle "Select All" checkbox change
-  const onCheckAllChange = (e) => {
-    if (e.target.checked) {
-      setCheckedList(SFTChecklist);
-    } else {
-      setCheckedList([]);
-    }
-  };
+  // (select-all removed) no per-page select-all handler
 
   const onSubUnitChange = (e) => {
     saveToLocal(CONSTANTS.FORM_ITEM_KEYS.SUB_UNIT, e);
@@ -177,6 +177,14 @@ const SFTForm = () => {
       setSubUnitLabel("Platoon/Section:");
     }
   };
+
+  // derive page items: first 4 on page 1, rest on page 2
+  const page1Items = SFTChecklist.slice(0, Math.min(4, SFTChecklist.length));
+  const page2Items = SFTChecklist.slice(Math.min(4, SFTChecklist.length));
+  // require every checklist item to be present in either page's checked list
+  const allChecked = SFTChecklist.length > 0 && SFTChecklist.every((item) =>
+    checkedListPage1.includes(item) || checkedListPage2.includes(item)
+  );
 
   return (
     <Spin spinning={isLoadingChecklist}>
@@ -211,7 +219,7 @@ const SFTForm = () => {
         >
           {(fields, { add, remove }, { errors }) => (
             //Made rank/name required
-             <Form.Item label="Rank/Name" required> 
+             <Form.Item label="Rank/Name" required style={{ marginBottom: 8 }}> 
               {fields.map((field) => {
                 const { key, ...fieldProps } = field; // extract key from spread
                 return (
@@ -362,42 +370,54 @@ const SFTForm = () => {
       </Form>
 
       <Modal
-        title="SFT Checklist"
+        title={modalPage === 1 ? "Get Active Questionnaire" : "Pre-Activity Checklist"}
         open={isModalShown}
         onCancel={() => setIsModalShown(false)}
         footer={
-          <Button
-            type="primary"
-            onClick={startActivity}
-            loading={isMessageSending}
-          >
-            Start Activity
-          </Button>
+          <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+            <div>
+              {modalPage === 2 && <Button onClick={() => setModalPage(1)}>Back</Button>}
+            </div>
+            <div>
+              {modalPage === 1 && (
+                <Button onClick={() => setModalPage(2)} style={{ marginRight: 8 }}>
+                  Next
+                </Button>
+              )}
+              <Button type="primary" onClick={startActivity} loading={isMessageSending} disabled={!allChecked}>
+                Start Activity
+              </Button>
+            </div>
+          </div>
         }
         loading={isLoadingChecklist}
       >
         <h5>By submitting this form, I declare that:</h5>
-        <Checkbox.Group value={checkedList} onChange={onChecklistChange}>
-          {SFTChecklist.map((item) => (
-            <Checkbox key={item} value={item} className="checkbox-label">
-              {item}
-            </Checkbox>
-          ))}
-        </Checkbox.Group>
+        {modalPage === 1 ? (
+          <>
+            <Checkbox.Group value={checkedListPage1} onChange={(list) => onChecklistChange(list, 1)}>
+              {page1Items.map((item) => (
+                <Checkbox key={item} value={item} className="checkbox-label">
+                  {item}
+                </Checkbox>
+              ))}
+            </Checkbox.Group>
 
-        <div style={{ marginTop: 12, display: "flex", justifyContent: "flex-end" }}>
-          <Checkbox
-            indeterminate={
-              checkedList.length > 0 && checkedList.length < SFTChecklist.length
-            }
-            onChange={onCheckAllChange}
-            checked={
-              SFTChecklist.length > 0 && checkedList.length === SFTChecklist.length
-            }
-          >
-            Select All
-          </Checkbox>
-        </div>
+            <div style={{ marginTop: 12, display: "flex", justifyContent: "flex-end" }} />
+          </>
+        ) : (
+          <>
+            <Checkbox.Group value={checkedListPage2} onChange={(list) => onChecklistChange(list, 2)}>
+              {page2Items.map((item) => (
+                <Checkbox key={item} value={item} className="checkbox-label">
+                  {item}
+                </Checkbox>
+              ))}
+            </Checkbox.Group>
+
+            <div style={{ marginTop: 12, display: "flex", justifyContent: "flex-end" }} />
+          </>
+        )}
       </Modal>
     </Spin>
   );
