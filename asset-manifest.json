@@ -1,15 +1,16 @@
 {
   "files": {
-    "main.css": "/sftTrackr/static/css/main.72da7351.css",
-    "main.js": "/sftTrackr/static/js/main.c3678493.js",
+    "main.css": "/sftTrackr/static/css/main.ead3ec62.css",
+    "main.js": "/sftTrackr/static/js/main.f28ed172.js",
     "static/js/453.d583917c.chunk.js": "/sftTrackr/static/js/453.d583917c.chunk.js",
+    "static/media/30SCE_LOGO.jpeg": "/sftTrackr/static/media/30SCE_LOGO.8479843944d57dad8e8f.jpeg",
     "index.html": "/sftTrackr/index.html",
-    "main.72da7351.css.map": "/sftTrackr/static/css/main.72da7351.css.map",
-    "main.c3678493.js.map": "/sftTrackr/static/js/main.c3678493.js.map",
+    "main.ead3ec62.css.map": "/sftTrackr/static/css/main.ead3ec62.css.map",
+    "main.f28ed172.js.map": "/sftTrackr/static/js/main.f28ed172.js.map",
     "453.d583917c.chunk.js.map": "/sftTrackr/static/js/453.d583917c.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.72da7351.css",
-    "static/js/main.c3678493.js"
+    "static/css/main.ead3ec62.css",
+    "static/js/main.f28ed172.js"
   ]
 }
